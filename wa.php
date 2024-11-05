@@ -10,13 +10,17 @@
  * Version: 1.0.0
  */
 
+require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 define("PATH_BASE_WAWP", plugin_dir_path(__FILE__));
 
 
 if (!defined("ABSPATH")) {
-    exit;
+  exit;
 }
+
+
+include_once PATH_BASE_WAWP . "/includes/WhatsApp.php";
 
 include_once PATH_BASE_WAWP . "/includes/Wawp.php";
 
@@ -24,6 +28,13 @@ $wpwa = new Wawp();
 
 $wpwa->init();
 
-register_activation_hook(__FILE__, [$wpwa, 'createTable']);
+register_activation_hook(__FILE__, [$wpwa, 'createTableSettings']);
+register_activation_hook(__FILE__, [$wpwa, 'createTableContacts']);
+
 
 add_action('publish_post', [$wpwa, 'handlePostPublished'], 10, 2);
+
+
+add_action('init', [$wpwa, 'registerRewriteRule']);
+add_filter('query_vars', [$wpwa, 'addQueryVars']);
+add_action('template_redirect', [$wpwa, 'handleCustomEndpoint']);
